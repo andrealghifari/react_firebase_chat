@@ -3,7 +3,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     scrollbar-width:none;
-    scrollbar-color: rgb(255, 255, 255)  rgba(85, 91, 209, .2);
+    /* scrollbar-color: rgb(255, 255, 255)  rgba(85, 91, 209, .2); */
     .search{
         display: flex;
         align-items: center;

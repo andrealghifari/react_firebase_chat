@@ -7,15 +7,18 @@ import edit from "../../../assets/edit.png";
 
 const UserInfo = () => {
   return (
-    <div className="userInfo">
-      <div className="user">
-        <img src={avatar} alt="" />
-        <h2>Andre</h2>
-      </div>
-      <div className="icons">
-        <img src={more} alt="" />
-        <img src={video} alt="" />
-        <img src={edit} alt="" />
+    <div className="info">
+      <div className="titleInfo">Waz<span>zup!</span></div>
+      <div className="userInfo">
+        <div className="user">
+          <img src={avatar} alt="" />
+          <h2>Andre</h2>
+        </div>
+        <div className="icons">
+          <img src={more} alt="" />
+          <img src={video} alt="" />
+          <img src={edit} alt="" />
+        </div>
       </div>
     </div>
   );

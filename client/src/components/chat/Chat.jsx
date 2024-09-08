@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import avatar from "../../assets/avatar.png";
 import phone from "../../assets/phone.png";
@@ -13,13 +13,16 @@ import EmojiPicker from "emoji-picker-react";
 const Chat = () => {
   const [openEmoji, setOpenEmoji] = useState(false);
   const [value, setValue] = useState("");
+  const endRef = useRef(null);
   const handleChange = (e) => {
     setValue(e.target.value);
   };
   const handleEmoji = (e) => {
     setValue((prevState) => prevState + e.emoji);
   };
-  console.log(value);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({behavior : "smooth"})
+  }, []);
 
   return (
     <div className="chat">
@@ -60,6 +63,18 @@ const Chat = () => {
             <p>lorem ipsum dolomet</p> <span>1 min ago</span>
           </div>
         </div>
+        <div className="message own">
+          <div className="texts">
+            <p>lorem ipsum dolomet</p> <span>1 min ago</span>
+          </div>
+        </div>
+        <div className="message">
+          <img src={avatar} alt="" />
+          <div className="texts">
+            <p>lorem ipsum dolomet</p> <span>1 min ago</span>
+          </div>
+        </div>
+        <div ref={endRef}></div>
       </div>
       <div className="bottom">
         <div className="icons">

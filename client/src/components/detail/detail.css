@@ -1,3 +1,103 @@
 .detail{
     flex: 1;   
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+
+    .user{
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(194, 194, 194, .75);
+        
+        img{
+           width: 100px;
+           height: 100px;
+           border-radius: 50%;
+           object-fit: cover;
+        }
+    }
+    .info{
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        flex: 1;
+        overflow: scroll;
+        scrollbar-width: none;
+
+        .option{
+           .title{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            
+            img{
+                width: 30px;
+                height: 30px;
+                padding: 10px;
+                background-color: rgba(17, 25, 40, .75);
+                border-radius: 50%;
+                cursor: pointer ;
+            }
+           }
+           .photos{
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                padding: 10px 2px;            
+                .photoItem{
+                    display: flex;
+                    flex-direction: row;
+                    /* justify-content: space-between; */
+                    gap: 40px;
+                    align-items: center;
+
+                    img{
+                        width: 20px;
+                        height: 20px;
+                        cursor: pointer;
+                    }
+                    
+                    .photoDetail{
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+                        align-items: center;
+                        justify-content: flex-end;
+                        img{
+                            object-fit: contain;
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 10px;
+                        }
+                        span{
+                            font-size: 14px;
+                            color: lightgrey;
+                            font-weight: 300;
+                        }
+                    }
+                }
+                
+           }
+
+        }
+
+        button{
+            padding: 4px;
+            cursor: pointer;
+            background-color: rgb(255, 0, 0);
+            color: white;
+            border: none;
+            opacity: 70%;
+            border-radius: 5px;
+            &:hover{
+                opacity: 100%;
+            }
+        }
+
+    }
 }
