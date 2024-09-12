@@ -4,6 +4,8 @@ import plus from "../../../assets/plus.png";
 import minus from "../../../assets/minus.png";
 import search from "../../../assets/search.png";
 import avatar from "../../../assets/avatar.png";
+import AddUser from "./addUser/addUser";
+
 const ChatList = () => {
   const [addTrigger, setAddTrigger] = useState(false);
   return (
@@ -63,6 +65,8 @@ const ChatList = () => {
           <p>Hello</p>
         </div>
       </div>
+
+      {addTrigger && <AddUser />}
     </div>
   );
 };

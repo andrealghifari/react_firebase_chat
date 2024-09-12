@@ -1,15 +1,14 @@
-import Chat from "./components/chat/Chat";
-import Detail from "./components/detail/Detail";
-import List from "./components/list/List";
+import { BrowserRouter as Router } from "react-router-dom";
+
+import AppRoutes from "./routes";
 
 function App() {
-  Detail
   return (
-    <div className="container">
-      <List />
-      <Chat />
-      <Detail />
-    </div>
+    <Router>
+      <div className="container">
+        <AppRoutes />
+      </div>
+    </Router>
   );
 }
 
