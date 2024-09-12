@@ -3,6 +3,9 @@ import avatarImg from "../../../assets/avatar.png";
 import "./register.css";
 import Notification from "../../notifications/Notification";
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../../../libs/firebase";
 
 const Register = () => {
   const [avatar, setAvatar] = useState({ file: null, url: "" });
@@ -16,12 +19,39 @@ const Register = () => {
       });
     }
   };
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    toast.success("Successfully Registered, welcome!", {
-      position: "top-center",
-      autoClose: 3000,
-    });
+    const formData = new FormData(e.target);
+    const { username, email, password } = Object.fromEntries(formData);
+    try {
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(`hasil: `, response);
+
+      await setDoc(doc(db, "users", response.user.uid), {
+        username,
+        email,
+        id: response.user.uid,
+        blocked: [],
+      });
+
+      await setDoc(doc(db, "userChats", response.user.uid), {
+        chats: [],
+      });
+      
+      toast.success("Successfully Registered, welcome!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error("Failed to interact with DB", {
+        autoClose: 3000,
+        position: "top-center",
+      });
+    }
   };
   return (
     <div className="register">
@@ -37,7 +67,7 @@ const Register = () => {
             <h5>Upload an Image</h5>
           </label>
           <span>*This will be your avatar</span>
-          <input type="text" name="userame" placeholder="Username" />
+          <input type="text" name="username" placeholder="Username" />
           <input
             type="file"
             id="file"
