@@ -77,6 +77,11 @@
         color: white;
         background-color: rgba(109, 64, 222);
         cursor: pointer;
+
+        &:disabled{
+          cursor:not-allowed;
+          background-color: rgba(109, 64, 222, 0.544);
+        }
       }
     }
   }

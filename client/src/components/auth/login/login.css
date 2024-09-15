@@ -76,9 +76,13 @@
       font-weight: 200;
 
       span {
+        margin-left: 2px;
         text-decoration: underline;
         font-weight: 500;
         cursor: pointer;
+        &:hover{
+          color: rgb(176, 97, 250);
+        }
       }
     }
   }

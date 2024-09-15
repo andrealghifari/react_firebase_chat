@@ -86,11 +86,23 @@
 
         }
 
-        button{
-            padding: 4px;
+        .btnBlock{
+            padding: 6px;
             cursor: pointer;
             background-color: rgb(255, 0, 0);
             color: white;
+            border: none;
+            opacity: 70%;
+            border-radius: 5px;
+            &:hover{
+                opacity: 100%;
+            }
+        }
+        .btnLogout{
+            padding: 6px;
+            cursor: pointer;
+            color: white;
+            background-color: #3D2CBF;
             border: none;
             opacity: 70%;
             border-radius: 5px;

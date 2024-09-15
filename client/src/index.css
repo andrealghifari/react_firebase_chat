@@ -13,6 +13,7 @@ body {
   height: 100vh;
   color: white;
   font-family: "Open Sans", sans-serif;
+  overflow: hidden;
 
   
 }
