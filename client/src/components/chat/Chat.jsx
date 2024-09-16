@@ -9,6 +9,7 @@ import img from "../../assets/img.png";
 import camera from "../../assets/camera.png";
 import mic from "../../assets/mic.png";
 import EmojiPicker from "emoji-picker-react";
+import { useSelector } from "react-redux";
 
 const Chat = () => {
   const [openEmoji, setOpenEmoji] = useState(false);

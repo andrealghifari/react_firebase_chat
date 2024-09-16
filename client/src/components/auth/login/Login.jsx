@@ -9,7 +9,7 @@ import Chat from "../../chat/Chat";
 import Detail from "../../detail/Detail";
 import List from "../../list/List";
 import { auth } from "../../../libs/firebase";
-import { fetchUserInfo, logoutUser } from "../../../libs/state/userStore";
+import { fetchUserInfo } from "../../../libs/state/userStore";
 
 const Login = () => {
   const location = useLocation();
@@ -19,7 +19,6 @@ const Login = () => {
   const { currentUser, isLoading } = useSelector((state) => state.auth);
 
   const messageRegistered = location?.state?.message;
-  const logout = location?.state?.logout;
   const [loading, setLoading] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
@@ -42,7 +41,16 @@ const Login = () => {
       setLoading(false);
       navigate("/");
     } catch (error) {
-      toast.error(error.message, { position: "bottom-right", autoClose: 4000 });
+      if ((error.code = "auth/invalid-credential"))
+        toast.error("Invalid Credential", {
+          position: "bottom-right",
+          autoClose: 4000,
+        });
+      else
+        toast.error(error.message, {
+          position: "bottom-right",
+          autoClose: 4000,
+        });
       setLoading(false);
     }
   };
@@ -75,8 +83,6 @@ const Login = () => {
 
   if (!isAuthChecked || isLoading)
     return <div className="loading">Loading...</div>;
-
-  console.log(currentUser);
 
   return (
     <>

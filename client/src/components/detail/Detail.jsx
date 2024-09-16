@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./detail.css";
 import avatar from "../../assets/avatar.png";
 import arrowUp from "../../assets/arrowUp.png";
@@ -6,9 +6,10 @@ import arrowDown from "../../assets/arrowDown.png";
 import download from "../../assets/download.png";
 import sharedPhoto from "../../assets/Zcommerce.png";
 import { useDispatch, useSelector } from "react-redux";
-import { auth } from "../../libs/firebase";
+import { auth, db } from "../../libs/firebase";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../libs/state/userStore";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const Detail = () => {
   const { currentUser } = useSelector((state) => state.auth);
@@ -23,10 +24,12 @@ const Detail = () => {
       .signOut()
       .then(() => {
         dispatch(logoutUser()); // dispatching logout state to the redux
-        navigate("/")
+        navigate("/");
       })
       .catch((error) => console.error(error));
   };
+
+ 
   return (
     <div className="detail">
       <div className="user">

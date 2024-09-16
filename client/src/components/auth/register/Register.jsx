@@ -15,7 +15,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleAvatar = (e) => {
-    console.log(e);
+    // console.log(e);
     if (e.target.files[0]) {
       setAvatar({
         file: e.target.files[0],

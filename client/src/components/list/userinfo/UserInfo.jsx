@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 
 const UserInfo = () => {
   const { currentUser } = useSelector((state) => state.auth);
-  console.log("current user at userInfo: ", currentUser);
   return (
     <div className="info">
       <div className="titleInfo">
