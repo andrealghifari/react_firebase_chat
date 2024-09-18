@@ -17,6 +17,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const { currentUser, isLoading } = useSelector((state) => state.auth);
+  const { chatId } = useSelector((state) => state.chat);
 
   const messageRegistered = location?.state?.message;
   const [loading, setLoading] = useState(false);
@@ -89,7 +90,8 @@ const Login = () => {
       {currentUser ? (
         <>
           <List />
-          <Chat />
+          {chatId && <Chat />}
+          {/* {chatId && <Detail />} */}
           <Detail />
         </>
       ) : (

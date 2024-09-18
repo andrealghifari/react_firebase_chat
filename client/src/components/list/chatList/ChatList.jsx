@@ -5,15 +5,49 @@ import minus from "../../../assets/minus.png";
 import search from "../../../assets/search.png";
 import avatar from "../../../assets/avatar.png";
 import AddUser from "./addUser/addUser";
-import { useSelector } from "react-redux";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../libs/firebase";
+import { changeChat } from "../../../libs/state/chatStore";
 
 const ChatList = () => {
   const { currentUser } = useSelector((state) => state.auth);
 
   const [addTrigger, setAddTrigger] = useState(false);
   const [chats, setChats] = useState([]);
+  const dispatch = useDispatch();
+
+  const handleSelectChat = async (chat) => {
+    //pisahkan data current User dengan sender
+    const userChats = chats.map((item) => {
+      const { user, ...rest } = item;
+      return rest;
+    });
+
+    //cari index dalam chats yang cocok dengan chatId dari chat yg di select
+    const chatIndex = userChats.findIndex((item) => {
+      return item.chatId === chat.chatId;
+    });
+
+    //update lagi userChats isSeen menjadi true
+    userChats[chatIndex].isSeen = true;
+
+    console.log(`userChatsnya:`, userChats[chatIndex]);
+    try {
+      await updateDoc(doc(db, "userChats", currentUser.id), {
+        chats: userChats,
+      });
+      dispatch(
+        changeChat({
+          chatId: chat.chatId,
+          user: chat.user,
+          currentUser,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -31,7 +65,7 @@ const ChatList = () => {
         });
         const chatData = await Promise.all(promises);
 
-        setChats(chatData.sort((a,b) => b.updatedAt - a.updatedAt));
+        setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
       }
     );
 
@@ -39,7 +73,7 @@ const ChatList = () => {
       unsub();
     };
   }, [currentUser.id]);
-  console.log(chats);
+  console.log("Chat in chatlist:", chats);
   return (
     <div className="chatList">
       <div className="search">
@@ -55,11 +89,17 @@ const ChatList = () => {
         />
       </div>
       {chats.map((chat) => (
-        <div className="item" key={chat.chatId}>
+        <div
+          className="item"
+          key={chat.chatId}
+          onClick={() => handleSelectChat(chat)}
+        >
           <img src={chat?.user?.avatar || avatar} alt="" />
           <div className="texts">
             <span>{chat?.user?.username}</span>
-            <p>{chat?.chatMessage}</p>
+            <p style={{ fontWeight: chat.isSeen ? "400" : "700" }}>
+              {chat?.lastMessage}
+            </p>
           </div>
         </div>
       ))}

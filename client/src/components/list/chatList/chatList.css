@@ -53,7 +53,8 @@
         gap: 20px;
         padding: 20px;
         align-items: center;
-        border-bottom: 1px solid rgba(194, 194, 194, .75);
+        /* border-bottom: 1px solid rgba(194, 194, 194, .75); */
+        cursor: pointer;
         /* margin-bottom: 10px ; */
         img{
             width: 50px;
