@@ -82,7 +82,7 @@ const AddUser = () => {
   return (
     <div className="addUser">
       <div className="titleBar">
-        Search a User
+        Add to Chat
       </div>
       <form onSubmit={handleSearchUser}>
         <div className="searchBar">

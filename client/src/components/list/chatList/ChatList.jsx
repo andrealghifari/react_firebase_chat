@@ -15,11 +15,12 @@ const ChatList = () => {
 
   const [addTrigger, setAddTrigger] = useState(false);
   const [chats, setChats] = useState([]);
+  const [filterChats, setFilterChats] = useState("");
   const dispatch = useDispatch();
 
   const handleSelectChat = async (chat) => {
     //pisahkan data current User dengan sender
-    console.log("selected chat data: ", chat)
+    console.log("selected chat data: ", chat);
     const userChats = chats.map((item) => {
       const { user, ...rest } = item;
       return rest;
@@ -51,6 +52,9 @@ const ChatList = () => {
       console.log(error);
     }
   };
+  const filteredChats = chats.filter((chat) =>
+    chat.user.username.toLowerCase().includes(filterChats.toLowerCase())
+  );
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -82,7 +86,13 @@ const ChatList = () => {
       <div className="search">
         <div className="searchBar">
           <img src={search} alt="" />
-          <input type="text" name="" id="" placeholder="Search" />
+          <input
+            type="text"
+            name=""
+            id=""
+            placeholder="Search"
+            onChange={(e) => setFilterChats(e.target.value)}
+          />
         </div>
         <img
           className="add"
@@ -91,14 +101,17 @@ const ChatList = () => {
           onClick={() => setAddTrigger((prevState) => !prevState)}
         />
       </div>
-      {chats.map((chat) => (
+      {filteredChats.map((chat) => (
         <div
           className="item"
           key={chat.chatId}
           onClick={() => handleSelectChat(chat)}
           style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183fe" }}
         >
-          <img src={chat?.user?.blocked.length ? avatar : chat?.user?.avatar} alt="" />
+          <img
+            src={chat?.user?.blocked.length ? avatar : chat?.user?.avatar}
+            alt=""
+          />
           <div className="texts">
             <span>{chat?.user?.username}</span>
             <p style={{ fontWeight: chat?.isSeen ? "400" : "700" }}>
