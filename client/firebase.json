@@ -5,7 +5,7 @@
   },
   "hosting": {
     "site": "andralghfr-reactchatapp",
-    "public": "build",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
