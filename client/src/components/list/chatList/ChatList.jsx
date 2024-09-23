@@ -19,6 +19,7 @@ const ChatList = () => {
 
   const handleSelectChat = async (chat) => {
     //pisahkan data current User dengan sender
+    console.log("selected chat data: ", chat)
     const userChats = chats.map((item) => {
       const { user, ...rest } = item;
       return rest;
@@ -37,6 +38,8 @@ const ChatList = () => {
       await updateDoc(doc(db, "userChats", currentUser.id), {
         chats: userChats,
       });
+
+      //update the state in state management, so it can be accessed in chat element
       dispatch(
         changeChat({
           chatId: chat.chatId,
@@ -93,11 +96,12 @@ const ChatList = () => {
           className="item"
           key={chat.chatId}
           onClick={() => handleSelectChat(chat)}
+          style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183fe" }}
         >
-          <img src={chat?.user?.avatar || avatar} alt="" />
+          <img src={chat?.user?.blocked.length ? avatar : chat?.user?.avatar} alt="" />
           <div className="texts">
             <span>{chat?.user?.username}</span>
-            <p style={{ fontWeight: chat.isSeen ? "400" : "700" }}>
+            <p style={{ fontWeight: chat?.isSeen ? "400" : "700" }}>
               {chat?.lastMessage}
             </p>
           </div>

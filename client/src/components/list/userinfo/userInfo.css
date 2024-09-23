@@ -20,6 +20,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
     .user {
       display: flex;
       flex-direction: row;
@@ -31,6 +32,10 @@
         height: 50px;
         border-radius: 50%;
         object-fit: cover;
+      }
+      p{
+        font-size: 18px;
+        font-weight: 700;
       }
     }
     .icons {

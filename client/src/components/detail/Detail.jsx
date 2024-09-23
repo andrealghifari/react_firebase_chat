@@ -4,18 +4,30 @@ import avatar from "../../assets/avatar.png";
 import arrowUp from "../../assets/arrowUp.png";
 import arrowDown from "../../assets/arrowDown.png";
 import download from "../../assets/download.png";
-import sharedPhoto from "../../assets/Zcommerce.png";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db } from "../../libs/firebase";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../libs/state/userStore";
-import { doc, onSnapshot } from "firebase/firestore";
+import { changeBlock, cleanUpChat } from "../../libs/state/chatStore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 
 const Detail = () => {
   const { currentUser } = useSelector((state) => state.auth);
+  const { user, chatId, isReceiverBlocked, isCurrentUserBlocked } = useSelector(
+    (state) => state.chat
+  );
   const [dropdown, setDropdown] = useState(false);
+  const [chat, setChat] = useState();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleDropdownPhotos = () => {
     setDropdown((prevState) => !prevState);
   };
@@ -24,18 +36,47 @@ const Detail = () => {
       .signOut()
       .then(() => {
         dispatch(logoutUser()); // dispatching logout state to the redux
+        dispatch(cleanUpChat());
         navigate("/");
       })
       .catch((error) => console.error(error));
   };
+  const handleBlockUser = async () => {
+    if (!user) return;
 
- 
+    try {
+      const userDocRef = doc(db, "users", currentUser.id);
+      await updateDoc(userDocRef, {
+        blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+      });
+      // changeBlock();
+      dispatch(changeBlock({ isReceiverBlocked: !isReceiverBlocked }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const chatRealtimeData = onSnapshot(doc(db, "chats", chatId), (res) => {
+      setChat(res.data());
+    });
+
+    return () => {
+      chatRealtimeData();
+    };
+  }, [chatId]);
+
+  console.log(`User state:`, user);
+  console.log(`chatId state:`, chatId);
+  console.log(`realtimeChat:`, chat);
+  console.log(`isReceiverBlocked`, isReceiverBlocked);
+
   return (
     <div className="detail">
       <div className="user">
-        <img src={currentUser?.avatar} alt="" />
-        <h2>{currentUser?.username}</h2>
-        <p>Lorem ipsum dolor sit amet.</p>
+        <img src={user?.avatar ? user?.avatar : avatar} alt="" />
+        <h2>{user?.username}</h2>
+        <p>{user?.username ? "Lorem ipsum dolor sit amet." : ""}</p>
       </div>
       <div className="info">
         <div className="option">
@@ -61,34 +102,25 @@ const Detail = () => {
           </div>
           {dropdown && (
             <div className="photos">
-              <div className="photoItem">
-                <div className="photoDetail">
-                  <img src={sharedPhoto} alt="" />
-                  <span>photo_2024</span>
-                </div>
-                <img src={download} alt="" />
-              </div>
-              <div className="photoItem">
-                <div className="photoDetail">
-                  <img src={sharedPhoto} alt="" />
-                  <span>photo_2024</span>
-                </div>
-                <img src={download} alt="" />
-              </div>
-              <div className="photoItem">
-                <div className="photoDetail">
-                  <img src={sharedPhoto} alt="" />
-                  <span>photo_2024</span>
-                </div>
-                <img src={download} alt="" />
-              </div>
-              <div className="photoItem">
-                <div className="photoDetail">
-                  <img src={sharedPhoto} alt="" />
-                  <span>photo_2024</span>
-                </div>
-                <img src={download} alt="" />
-              </div>
+              {chat &&
+                chat.messages.map((message, index) => {
+                  if (message.image) {
+                    const imageURLParts = message.image.split("/");
+                    const imageName = decodeURIComponent(
+                      imageURLParts[imageURLParts.length - 1].split("?")[0]
+                    );
+                    console.log(`imagename: `, imageName);
+                    return (
+                      <div className="photoItem" key={index}>
+                        <div className="photoDetail">
+                          <img src={message.image} alt="" />
+                          <span>{imageName.split("_").pop()}</span>
+                        </div>
+                        <img src={download} alt="" />
+                      </div>
+                    );
+                  }
+                })}
             </div>
           )}
         </div>
@@ -98,7 +130,13 @@ const Detail = () => {
             <img src={arrowDown} alt="" />
           </div>
         </div>
-        <button className="btnBlock">Block User</button>
+        <button className="btnBlock" onClick={handleBlockUser} style={{cursor : isCurrentUserBlocked ? "not-allowed" : "pointer"}}>
+          {isCurrentUserBlocked
+            ? "You are blocked!"
+            : isReceiverBlocked
+            ? "User blocked"
+            : "Block User"}
+        </button>
         <button className="btnLogout" onClick={handleLogout}>
           Log Out
         </button>

@@ -42,16 +42,12 @@ const Login = () => {
       setLoading(false);
       navigate("/");
     } catch (error) {
-      if ((error.code = "auth/invalid-credential"))
-        toast.error("Invalid Credential", {
-          position: "bottom-right",
-          autoClose: 4000,
-        });
-      else
-        toast.error(error.message, {
-          position: "bottom-right",
-          autoClose: 4000,
-        });
+      toast.error(
+        error.code === "auth/invalid-credential"
+          ? "Invalid Credential"
+          : error.message,
+        { position: "bottom-right", autoClose: 3000 }
+      );
       setLoading(false);
     }
   };
@@ -76,7 +72,7 @@ const Login = () => {
     if (messageRegistered) {
       toast.success(messageRegistered, {
         position: "bottom-right",
-        autoClose: 4000,
+        autoClose: 3000,
       });
     }
     navigate(location.pathname, { replace: true });
@@ -85,14 +81,15 @@ const Login = () => {
   if (!isAuthChecked || isLoading)
     return <div className="loading">Loading...</div>;
 
+  console.log(`chatId : `, chatId);
+  console.log(`message registered`, messageRegistered);
   return (
     <>
       {currentUser ? (
         <>
           <List />
           {chatId && <Chat />}
-          {/* {chatId && <Detail />} */}
-          <Detail />
+          {chatId && <Detail />}
         </>
       ) : (
         <div className="login">

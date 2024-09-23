@@ -20,9 +20,12 @@ import { useSelector } from "react-redux";
 const AddUser = () => {
   const [user, setUser] = useState(null);
   const { currentUser } = useSelector((state) => state.auth);
+
   const handleAddUser = async () => {
     const chatRef = collection(db, "chats");
+    console.log("🚀 ~ handleAddUser ~ chatRef:", chatRef);
     const userChatsRef = collection(db, "userChats");
+    console.log("🚀 ~ handleAddUser ~ userChatsRef:", userChatsRef);
 
     try {
       const newChatRef = doc(chatRef);
@@ -52,7 +55,9 @@ const AddUser = () => {
       });
 
       // console.log(newChatRef.id);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   const handleSearchUser = async (e) => {
     e.preventDefault();
@@ -76,6 +81,9 @@ const AddUser = () => {
   };
   return (
     <div className="addUser">
+      <div className="titleBar">
+        Search a User
+      </div>
       <form onSubmit={handleSearchUser}>
         <div className="searchBar">
           <img src={search} alt="" />

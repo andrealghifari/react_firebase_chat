@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   chatId: null,
@@ -12,9 +11,13 @@ export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
+    //cleanupchat is used to erased the the current user chat activity
+    cleanUpChat: (state) => {
+      (state.chatId = null), (state.user = null);
+    },
     changeChat: (state, action) => {
-      const { chatId, user , currentUser} = action.payload;    
-   
+      const { chatId, user, currentUser } = action.payload;
+
       //check if the user (receiver ) blocked the currentUser
       if (user.blocked.includes(currentUser.id)) {
         (state.chatId = chatId),
@@ -29,7 +32,7 @@ export const chatSlice = createSlice({
           (state.isCurrentUserBlocked = false),
           (state.isReceiverBlocked = true);
       } else {
-        //just put blocked false, and remain chatid and user
+        //set the blocked false, and remain chatid and user
         (state.chatId = chatId),
           (state.user = user),
           (state.isCurrentUserBlocked = false),
@@ -37,8 +40,9 @@ export const chatSlice = createSlice({
       }
     },
 
-    changeBlock: (state) => {
-      state.isReceiverBlocked = !state.isReceiverBlocked;
+    changeBlock: (state, action) => {
+      // state.isReceiverBlocked = !state.isReceiverBlocked;
+      state.isReceiverBlocked = action.payload.isReceiverBlocked;
     },
 
     resetChat: (state) => {
@@ -51,4 +55,5 @@ export const chatSlice = createSlice({
 });
 
 export default chatSlice.reducer;
-export const { changeChat, changeBlock, resetChat } = chatSlice.actions;
+export const { changeChat, changeBlock, resetChat, cleanUpChat } =
+  chatSlice.actions;

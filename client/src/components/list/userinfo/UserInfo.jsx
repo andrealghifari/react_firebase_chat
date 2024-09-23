@@ -16,7 +16,7 @@ const UserInfo = () => {
       <div className="userInfo">
         <div className="user">
           <img src={currentUser ? currentUser.avatar : avatar} alt="" />
-          <h2>{currentUser ? currentUser.username : "Anynymous"}</h2>
+          <p>{currentUser ? currentUser.username : "Anynymous"}</p>
         </div>
         <div className="icons">
           <img src={more} alt="" />

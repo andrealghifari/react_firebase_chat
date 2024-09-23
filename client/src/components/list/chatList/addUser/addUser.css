@@ -10,6 +10,10 @@
   right: 0;
   bottom: 0;
   margin: auto;
+  
+  .titleBar{
+    padding: 15px 0px;
+  }
 
   form {
     display: flex;

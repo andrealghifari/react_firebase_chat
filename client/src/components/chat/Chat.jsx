@@ -18,30 +18,49 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
-
+import upload from "../../libs/upload";
+import tippy from "tippy.js";
 const Chat = () => {
   const [openEmoji, setOpenEmoji] = useState(false);
-  const { chatId } = useSelector((state) => state.chat);
+  const { chatId, isCurrentUserBlocked, isReceiverBlocked} = useSelector((state) => state.chat);
   const { currentUser } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.chat);
+
   const [value, setValue] = useState("");
   const [chat, setChat] = useState();
+  const [image, setImage] = useState({ file: null, url: `` });
+
   const endRef = useRef(null);
   const handleChange = (e) => {
     setValue(e.target.value);
+  };
+  const handleImageUpload = (e) => {
+    console.log(e.target.files[0]);
+    if (e.target.files[0]) {
+      setImage({
+        file: e.target.files[0],
+        url: URL.createObjectURL(e.target.files[0]),
+      });
+    }
   };
   const handleEmoji = (e) => {
     setValue((prevState) => prevState + e.emoji);
   };
   const handleSendMessage = async () => {
+    let imgUrl = null;
     if (!value) return;
 
     try {
+      if (image.file) {
+        imgUrl = await upload(image.file);
+      }
+
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
           text: value,
           createdAt: new Date(),
+          ...(imgUrl && { image: imgUrl }),
         }),
       });
 
@@ -69,7 +88,15 @@ const Chat = () => {
     } catch (error) {
       console.log(error);
     }
+
+    setImage({
+      file: null,
+      url: "",
+    });
+    setValue("");
   };
+
+  //USE EFFECT LIST
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -84,21 +111,22 @@ const Chat = () => {
     };
   }, [chatId]);
 
-  console.log(chat);
+  console.log( `Data chata on Chat.jsx`,chat);
+  console.log(`dat user :`, user);
 
   return (
     <div className="chat">
       <div className="top">
         <div className="user">
-          <img src={avatar} alt="" />
+          <img src={user?.avatar || avatar} alt="" />
           <div className="texts">
-            <span>Jane Doe</span>
-            <p>Lorem, ipsum dolor sit amet</p>
+            <span>{user?.username}</span>
+            <p>{user?.username ? "Lorem, ipsum dolor sit amet" : ""}</p>
           </div>
         </div>
         <div className="icons">
-          <img src={phone} alt="" />
-          <img src={video} alt="" />
+          <img id="phoneImg" src={phone} alt="" />
+          <img id="videoImg" src={video} alt="" />
           <img src={info} alt="" />
         </div>
       </div>
@@ -113,17 +141,40 @@ const Chat = () => {
               key={message.createdAt}
             >
               <div className="texts">
-                {message.img && <img src="" alt="" />}
-                <p>{message.text}</p> <span>1 min ago</span>
+                {message.image && (
+                  <img className="chatSendImg" src={message.image} alt="" />
+                )}
+                <p>{message.text}</p>
+                <span>1 min ago</span>
               </div>
             </div>
           ))}
+
+        {image.url && (
+          <div className="message own">
+            <div className="texts">
+              <img className="chatSendImg" src={image.url} alt="" />
+            </div>
+          </div>
+        )}
 
         <div ref={endRef}></div>
       </div>
       <div className="bottom">
         <div className="icons">
-          <img src={img} alt="" />
+          <label htmlFor="imgFile">
+            {image.file && (
+              <img className="uploadedImg" src={image.url} alt="" />
+            )}
+            <img src={img} alt="" />
+          </label>
+          <input
+            type="file"
+            id="imgFile"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            disabled={isCurrentUserBlocked|| isReceiverBlocked}
+          />
           <img src={camera} alt="" />
           <img src={mic} alt="" />
         </div>
@@ -132,6 +183,7 @@ const Chat = () => {
           type="text"
           placeholder="Type a text..."
           onChange={handleChange}
+          disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
         <div className="emoji">
           <img
@@ -143,7 +195,7 @@ const Chat = () => {
             <EmojiPicker open={openEmoji} onEmojiClick={handleEmoji} />
           </div>
         </div>
-        <button className="sendChat" onClick={handleSendMessage}>
+        <button className="sendChat" onClick={handleSendMessage} disabled={isCurrentUserBlocked || isReceiverBlocked}>
           Send
         </button>
       </div>

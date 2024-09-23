@@ -9,7 +9,6 @@ import { auth, db } from "../../../libs/firebase";
 import upload from "../../../libs/upload";
 import { useNavigate } from "react-router-dom";
 
-
 const Register = () => {
   const [avatar, setAvatar] = useState({ file: null, url: "" });
   const [loading, setLoading] = useState(false);
@@ -28,6 +27,24 @@ const Register = () => {
     setLoading(true);
     const formData = new FormData(e.target);
     const { username, email, password } = Object.fromEntries(formData);
+
+    //VALIDATION RULES
+    if (!username || !email || !password) {
+      setLoading(false);
+      return toast.warn("Please input all fields", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
+    if (!avatar.file) {
+      setLoading(false);
+
+      return toast.warn("Avatar is needed", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
+
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -41,7 +58,7 @@ const Register = () => {
       await setDoc(doc(db, "users", response.user.uid), {
         username,
         email,
-        avatar : imgURL,
+        avatar: imgURL,
         id: response.user.uid,
         blocked: [],
       });
@@ -50,15 +67,26 @@ const Register = () => {
         chats: [],
       });
 
-      navigate("/", {state : {messageRegister : "Registration has successful!"}})
-
-    } catch (error) {
-      toast.error(error.message, {
-        autoClose: 3000,
-        position: "top-center",
+      navigate("/", {
+        state: { messageRegister: "Registration has successful!" },
       });
-    }
-    finally{
+    } catch (error) {
+      switch (error.code) {
+        case "auth/invalid-email":
+          toast.error("Invalid email format", {
+            position: "bottom-right",
+            autoClose: 3000,
+          });
+          break;
+
+        default:
+          toast.error(error.message, {
+            autoClose: 3000,
+            position: "top-center",
+          });
+          break;
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -85,7 +113,9 @@ const Register = () => {
           />
           <input type="email" name="email" placeholder="Email" />
           <input type="password" name="password" placeholder="Password" />
-          <button type="submit" disabled={loading}>{loading ? "Processing..." : "Sign Up"}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Processing..." : "Sign Up"}
+          </button>
         </form>
       </div>
     </div>
