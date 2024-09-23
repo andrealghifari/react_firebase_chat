@@ -19,7 +19,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import upload from "../../libs/upload";
-import tippy from "tippy.js";
 const Chat = () => {
   const [openEmoji, setOpenEmoji] = useState(false);
   const { chatId, isCurrentUserBlocked, isReceiverBlocked} = useSelector((state) => state.chat);
