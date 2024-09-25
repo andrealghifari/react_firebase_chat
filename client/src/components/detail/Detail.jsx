@@ -3,7 +3,7 @@ import "./detail.css";
 import avatar from "../../assets/avatar.png";
 import arrowUp from "../../assets/arrowUp.png";
 import arrowDown from "../../assets/arrowDown.png";
-import download from "../../assets/download.png";
+import downloadImg from "../../assets/download.png";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db } from "../../libs/firebase";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import {
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
+import download from "../../libs/download";
 
 const Detail = () => {
   const { currentUser } = useSelector((state) => state.auth);
@@ -53,6 +54,15 @@ const Detail = () => {
       dispatch(changeBlock({ isReceiverBlocked: !isReceiverBlocked }));
     } catch (error) {
       console.log(error);
+    }
+  };
+  const handleDownload = async (fileURL) => {
+    if (fileURL) {
+      try {
+        const response = await download(fileURL);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -116,7 +126,11 @@ const Detail = () => {
                           <img src={message.image} alt="" />
                           <span>{imageName.split("_").pop()}</span>
                         </div>
-                        <img src={download} alt="" />
+                        <img
+                          src={downloadImg}
+                          alt=""
+                          onClick={() => handleDownload(message.image)}
+                        />
                       </div>
                     );
                   }
@@ -130,7 +144,11 @@ const Detail = () => {
             <img src={arrowDown} alt="" />
           </div>
         </div>
-        <button className="btnBlock" onClick={handleBlockUser} style={{cursor : isCurrentUserBlocked ? "not-allowed" : "pointer"}}>
+        <button
+          className="btnBlock"
+          onClick={handleBlockUser}
+          style={{ cursor: isCurrentUserBlocked ? "not-allowed" : "pointer" }}
+        >
           {isCurrentUserBlocked
             ? "You are blocked!"
             : isReceiverBlocked

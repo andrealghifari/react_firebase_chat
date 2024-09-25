@@ -20,6 +20,9 @@ firestore.indexes.json
 firestore.rules
 public/
 
+#cors and storage rules
+client/storage.rules
+client/cors-rules.json
 
 # Editor directories and files
 .vscode/*

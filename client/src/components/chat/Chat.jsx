@@ -34,7 +34,6 @@ const Chat = () => {
     setValue(e.target.value);
   };
   const handleImageUpload = (e) => {
-    console.log(e.target.files[0]);
     if (e.target.files[0]) {
       setImage({
         file: e.target.files[0],
@@ -112,7 +111,7 @@ const Chat = () => {
 
   console.log( `Data chata on Chat.jsx`,chat);
   console.log(`dat user :`, user);
-
+  console.log(image);
   return (
     <div className="chat">
       <div className="top">
