@@ -109,7 +109,7 @@ const ChatList = () => {
           style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183fe" }}
         >
           <img
-            src={chat?.user?.blocked.length ? avatar : chat?.user?.avatar}
+            src={chat?.user?.blocked.includes(currentUser.id) ? avatar : chat?.user?.avatar}
             alt=""
           />
           <div className="texts">

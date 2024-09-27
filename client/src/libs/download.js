@@ -19,8 +19,15 @@ const download = async (file) => {
         const link = document.createElement("a");
         const url = window.URL.createObjectURL(blob);
 
+        //pre download configuration
+        const fileNameFromURL = file.split("/").pop().split("?")[0];
+        const originalFileName = decodeURIComponent(fileNameFromURL);
+        // Example: "Thu Sep 19 2024 11:11:04 GMT+0700 (Western Indonesia Time)_Flow Approval WF 1.png"
+        // Get the file extension (e.g., ".png")
+        const fileExtension = originalFileName.split(".").pop();
+
         link.href = url;
-        link.download = "new_file.png";
+        link.download = `file_name.${fileExtension}`;
         document.body.appendChild(link);
 
         link.click();

@@ -44,12 +44,12 @@
                 cursor: pointer ;
             }
            }
-           .photos{
+           .photos, .files{
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
                 padding: 10px 2px;            
-                .photoItem{
+                .item{
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
@@ -62,7 +62,7 @@
                         cursor: pointer;
                     }
                     
-                    .photoDetail{
+                    .itemDetail{
                         display: flex;
                         flex-direction: row;
                         gap: 10px;
@@ -70,8 +70,8 @@
                         justify-content: flex-end;
                         img{
                             object-fit: contain;
-                            width: 40px;
-                            height: 40px;
+                            width: 30px;
+                            height: 30px;
                             border-radius: 10px;
                         }
                         span{

@@ -105,6 +105,16 @@
         height: 200px;
         object-fit: contain;
       }
+      .fileDownloadLink{
+        display: flex;  
+        flex-direction: row;
+        gap: 5px;
+        font-size: 12px;
+        align-items: center;
+        text-decoration: underline;
+        color: rgb(0, 195, 255);
+        cursor: pointer;
+      }
     }
   }
   .bottom {

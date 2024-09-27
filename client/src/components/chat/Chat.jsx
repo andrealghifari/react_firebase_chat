@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./chat.css";
+import fileImg from "../../assets/file.png";
 import avatar from "../../assets/avatar.png";
 import phone from "../../assets/phone.png";
 import video from "../../assets/video.png";
@@ -19,38 +20,58 @@ import {
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import upload from "../../libs/upload";
+import download from "../../libs/download";
+import { format } from "date-fns";
 const Chat = () => {
   const [openEmoji, setOpenEmoji] = useState(false);
-  const { chatId, isCurrentUserBlocked, isReceiverBlocked} = useSelector((state) => state.chat);
+  const { chatId, isCurrentUserBlocked, isReceiverBlocked } = useSelector(
+    (state) => state.chat
+  );
   const { currentUser } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.chat);
 
   const [value, setValue] = useState("");
   const [chat, setChat] = useState();
-  const [image, setImage] = useState({ file: null, url: `` });
+  const [uploadFile, setUploadFile] = useState({
+    file: null,
+    url: ``,
+    isImage: false,
+  });
 
   const endRef = useRef(null);
   const handleChange = (e) => {
     setValue(e.target.value);
   };
-  const handleImageUpload = (e) => {
-    if (e.target.files[0]) {
-      setImage({
-        file: e.target.files[0],
-        url: URL.createObjectURL(e.target.files[0]),
+  const handleFileUpload = (e) => {
+    const fileData = e.target.files[0];
+    if (fileData) {
+      setUploadFile({
+        file: fileData,
+        url: URL.createObjectURL(fileData),
+        isImage: fileData.type.startsWith("image"),
       });
+    }
+  };
+  const handleFileDownload = async (fileURL) => {
+    if (fileURL) {
+      try {
+        const response = await download(fileURL);
+      } catch (error) {
+        console.log(error);
+      }
+      y;
     }
   };
   const handleEmoji = (e) => {
     setValue((prevState) => prevState + e.emoji);
   };
   const handleSendMessage = async () => {
-    let imgUrl = null;
+    let fileURL = null;
     if (!value) return;
 
     try {
-      if (image.file) {
-        imgUrl = await upload(image.file);
+      if (uploadFile.file) {
+        fileURL = await upload(uploadFile.file);
       }
 
       await updateDoc(doc(db, "chats", chatId), {
@@ -58,7 +79,8 @@ const Chat = () => {
           senderId: currentUser.id,
           text: value,
           createdAt: new Date(),
-          ...(imgUrl && { image: imgUrl }),
+          ...(fileURL && { file: fileURL }),
+          ...(uploadFile.isImage && { isImage: uploadFile.isImage }),
         }),
       });
 
@@ -87,11 +109,16 @@ const Chat = () => {
       console.log(error);
     }
 
-    setImage({
+    setUploadFile({
       file: null,
       url: "",
+      isImage: false,
     });
     setValue("");
+  };
+  const displayMessageDate = (createdAt) => {
+    const newDate = new Date(createdAt.seconds * 1000);
+    return format(newDate, "MMM d yyyy, h:mm a");
   };
 
   //USE EFFECT LIST
@@ -109,9 +136,9 @@ const Chat = () => {
     };
   }, [chatId]);
 
-  console.log( `Data chata on Chat.jsx`,chat);
+  console.log(`Data chat on Chat.jsx`, chat);
   console.log(`dat user :`, user);
-  console.log(image);
+  console.log(`file uploaded`, uploadFile);
   return (
     <div className="chat">
       <div className="top">
@@ -139,39 +166,59 @@ const Chat = () => {
               key={message.createdAt}
             >
               <div className="texts">
-                {message.image && (
-                  <img className="chatSendImg" src={message.image} alt="" />
+                {message.file ? (
+                  <div>
+                    {message.isImage ? (
+                      <img
+                        className="chatSendImg"
+                        src={message.file}
+                        alt="Uploaded Image"
+                      />
+                    ) : (
+                      <a
+                        className="fileDownloadLink"
+                        onClick={() => handleFileDownload(message.file)}
+                      >
+                        <img src={fileImg} alt="" />
+                        {decodeURIComponent(
+                          message.file
+                            .split("%2F")
+                            .pop()
+                            .split("_")
+                            .pop()
+                            .split("?")[0]
+                        )}
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <></>
                 )}
+
                 <p>{message.text}</p>
-                <span>1 min ago</span>
+                <span className="sentTime">
+                  {displayMessageDate(message.createdAt)}
+                </span>
               </div>
             </div>
           ))}
-
-        {image.url && (
-          <div className="message own">
-            <div className="texts">
-              <img className="chatSendImg" src={image.url} alt="" />
-            </div>
-          </div>
-        )}
 
         <div ref={endRef}></div>
       </div>
       <div className="bottom">
         <div className="icons">
           <label htmlFor="imgFile">
-            {image.file && (
-              <img className="uploadedImg" src={image.url} alt="" />
+            {uploadFile.file && (
+              <img className="uploadedImg" src={uploadFile.url} alt="" />
             )}
             <img src={img} alt="" />
           </label>
           <input
             type="file"
             id="imgFile"
-            onChange={handleImageUpload}
+            onChange={handleFileUpload}
             style={{ display: "none" }}
-            disabled={isCurrentUserBlocked|| isReceiverBlocked}
+            disabled={isCurrentUserBlocked || isReceiverBlocked}
           />
           <img src={camera} alt="" />
           <img src={mic} alt="" />
@@ -193,7 +240,11 @@ const Chat = () => {
             <EmojiPicker open={openEmoji} onEmojiClick={handleEmoji} />
           </div>
         </div>
-        <button className="sendChat" onClick={handleSendMessage} disabled={isCurrentUserBlocked || isReceiverBlocked}>
+        <button
+          className="sendChat"
+          onClick={handleSendMessage}
+          disabled={isCurrentUserBlocked || isReceiverBlocked}
+        >
           Send
         </button>
       </div>

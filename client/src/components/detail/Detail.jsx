@@ -4,6 +4,8 @@ import avatar from "../../assets/avatar.png";
 import arrowUp from "../../assets/arrowUp.png";
 import arrowDown from "../../assets/arrowDown.png";
 import downloadImg from "../../assets/download.png";
+import fileImg from "../../assets/file.png";
+
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db } from "../../libs/firebase";
 import { useNavigate } from "react-router-dom";
@@ -17,20 +19,23 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import download from "../../libs/download";
-
 const Detail = () => {
   const { currentUser } = useSelector((state) => state.auth);
   const { user, chatId, isReceiverBlocked, isCurrentUserBlocked } = useSelector(
     (state) => state.chat
   );
-  const [dropdown, setDropdown] = useState(false);
+  const [dropdownPhotos, setDropdownPhotos] = useState(false);
+  const [dropdownFiles, setDropdownFiles] = useState(false);
   const [chat, setChat] = useState();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleDropdownPhotos = () => {
-    setDropdown((prevState) => !prevState);
+    setDropdownPhotos((prevState) => !prevState);
+  };
+  const handleDropdownFiles = () => {
+    setDropdownFiles((prevState) => !prevState);
   };
   const handleLogout = () => {
     auth
@@ -105,31 +110,31 @@ const Detail = () => {
           <div className="title">
             <span>Shared Photos</span>
             <img
-              src={dropdown ? arrowUp : arrowDown}
+              src={dropdownPhotos ? arrowUp : arrowDown}
               alt=""
               onClick={handleDropdownPhotos}
             />
           </div>
-          {dropdown && (
+          {dropdownPhotos && (
             <div className="photos">
               {chat &&
                 chat.messages.map((message, index) => {
-                  if (message.image) {
-                    const imageURLParts = message.image.split("/");
+                  if (message.file && message.isImage) {
+                    const imageURLParts = message.file.split("/");
                     const imageName = decodeURIComponent(
                       imageURLParts[imageURLParts.length - 1].split("?")[0]
                     );
                     console.log(`imagename: `, imageName);
                     return (
-                      <div className="photoItem" key={index}>
-                        <div className="photoDetail">
-                          <img src={message.image} alt="" />
+                      <div className="item" key={index}>
+                        <div className="itemDetail">
+                          <img src={message.file} alt="" />
                           <span>{imageName.split("_").pop()}</span>
                         </div>
                         <img
                           src={downloadImg}
                           alt=""
-                          onClick={() => handleDownload(message.image)}
+                          onClick={() => handleDownload(message.file)}
                         />
                       </div>
                     );
@@ -141,8 +146,38 @@ const Detail = () => {
         <div className="option">
           <div className="title">
             <span>Shared Files</span>
-            <img src={arrowDown} alt="" />
+            <img
+              src={dropdownFiles ? arrowUp : arrowDown}
+              onClick={handleDropdownFiles}
+              alt=""
+            />
           </div>
+          {dropdownFiles && (
+            <div className="files">
+              {chat &&
+                chat.messages.map((message, index) => {
+                  if (message.file && !message.isImage) {
+                    const imageURLParts = message.file.split("/");
+                    const imageName = decodeURIComponent(
+                      imageURLParts[imageURLParts.length - 1].split("?")[0]
+                    );
+                    return (
+                      <div className="item" key={index}>
+                        <div className="itemDetail">
+                          <img src={fileImg} alt="" />
+                          <span>{imageName.split("_").pop()}</span>
+                        </div>
+                        <img
+                          src={downloadImg}
+                          alt=""
+                          onClick={() => handleDownload(message.file)}
+                        />
+                      </div>
+                    );
+                  }
+                })}
+            </div>
+          )}
         </div>
         <button
           className="btnBlock"
